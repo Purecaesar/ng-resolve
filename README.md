@@ -1,3 +1,2 @@
-# angular-ivy-nvgxj2
-
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/angular-ivy-nvgxj2)
+# NgResolve
+Simple inject router's resolved data inside your component!
