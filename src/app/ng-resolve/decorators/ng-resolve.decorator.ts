@@ -6,8 +6,11 @@ import { getCurrentOutlet } from '../functions/get-current-outlet';
 import { StaticInjectorService } from '../services/static-injector.service';
 
 export function NgResolve(name?: string) {
-  return function(target: any, key: string) {
-    console.log('comp init');
+  return function(
+    target: any,
+    key: string,
+    originalDescriptor?: TypedPropertyDescriptor<any>
+  ): any {
     const router = StaticInjectorService.Injector.get(Router);
     const triger = new Subject();
     const destroyer = new Subject();
@@ -49,23 +52,26 @@ export function NgResolve(name?: string) {
       )
       .subscribe({
         next: data => {
-          routerData = data;
+          target[key] = data;
           cdr.markForCheck();
         }
       });
 
-    Object.defineProperty(target, key, {
+    return {
       get() {
         if (!inited) {
           inited = true;
           triger.next();
         }
 
-        return routerData;
+        return originalDescriptor
+          ? originalDescriptor.get.call(target)
+          : routerData;
       },
       set(value: any) {
         routerData = value;
+        if (originalDescriptor) originalDescriptor.set.call(target, routerData);
       }
-    });
+    };
   };
 }

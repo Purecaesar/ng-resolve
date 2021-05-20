@@ -29,7 +29,14 @@ import { NgResolve } from '../ng-resolve/decorators/ng-resolve.decorator';
 })
 export class LazyComponent {
   @NgResolve()
-  public data: number[];
+  public set data(number: number[]) {
+    this._data = number;
+  };
+  public get data() {
+    return this._data;
+  }
+
+  private _data;
 
   public changeValue() {
     this.data = [5];
