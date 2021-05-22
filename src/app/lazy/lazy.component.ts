@@ -31,12 +31,12 @@ export class LazyComponent {
   @NgResolve()
   public set data(number: number[]) {
     this._data = number;
-  };
+  }
   public get data() {
     return this._data;
   }
 
-  private _data;
+  private _data: number[];
 
   public changeValue() {
     this.data = [5];
