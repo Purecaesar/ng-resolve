@@ -3,9 +3,10 @@ import { OutletContext, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { pluck, switchMap, takeUntil } from 'rxjs/operators';
 import { getCurrentOutlet } from '../functions/get-current-outlet';
+import { getRouteWithData } from '../functions/get-route-with-data';
 import { StaticInjectorService } from '../services/static-injector.service';
 
-export function NgResolve(name?: string) {
+export function NgResolve(name?: string, propagation = true) {
   return function(
     target: any,
     key: string,
@@ -36,6 +37,12 @@ export function NgResolve(name?: string) {
 
           const outlet: any = currentActivatedOutlet.outlet;
           const compRef = outlet.activated as ComponentRef<any>;
+          const routeWithData = getRouteWithData(
+            currentActivatedOutlet.route,
+            name || key,
+            propagation
+          );
+
           cdr = compRef.injector.get(ChangeDetectorRef);
 
           compRef.onDestroy(() => {
@@ -44,7 +51,7 @@ export function NgResolve(name?: string) {
             console.log('destroy');
           });
 
-          return currentActivatedOutlet.route.data.pipe(
+          return routeWithData.data.pipe(
             pluck(name || key),
             takeUntil(destroyer)
           );
