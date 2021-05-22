@@ -48,7 +48,6 @@ export function NgResolve(name?: string, propagation = true) {
           compRef.onDestroy(() => {
             inited = false;
             destroyer.next();
-            console.log('destroy');
           });
 
           return routeWithData.data.pipe(
