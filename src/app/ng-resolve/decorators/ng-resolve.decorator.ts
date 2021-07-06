@@ -23,6 +23,7 @@ export function NgResolve(name?: string, propagation = true) {
     let routerData: any;
     let cdr: ChangeDetectorRef;
     let inited = false;
+    let compRef: ComponentRef<any>;
 
     triger
       .pipe(
@@ -36,13 +37,13 @@ export function NgResolve(name?: string, propagation = true) {
             throw new Error('Component is not in router tree');
 
           const outlet: any = currentActivatedOutlet.outlet;
-          const compRef = outlet.activated as ComponentRef<any>;
           const routeWithData = getRouteWithData(
             currentActivatedOutlet.route,
             name || key,
             propagation
           );
 
+          compRef = outlet.activated as ComponentRef<any>;
           cdr = compRef.injector.get(ChangeDetectorRef);
 
           compRef.onDestroy(() => {
@@ -71,12 +72,12 @@ export function NgResolve(name?: string, propagation = true) {
         }
 
         return originalDescriptor
-          ? originalDescriptor.get.call(target)
+          ? originalDescriptor.get.call(compRef.instance)
           : routerData;
       },
       set(value: any) {
         routerData = value;
-        if (originalDescriptor) originalDescriptor.set.call(target, routerData);
+        if (originalDescriptor) originalDescriptor.set.call(compRef.instance, routerData);
       }
     };
   };
